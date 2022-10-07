@@ -1,0 +1,43 @@
+.color-size-picker {
+  width: max-content;
+  height: 100vh;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  box-shadow: -5px 0px 10px 1px rgba(0, 0, 0, 0.2);
+}
+
+.picker-group {
+  height: max-content;
+  width: 100%;
+}
+
+.picker {
+  height: 8vh;
+  width: 8vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+}
+
+.color-picker
+{
+    border: solid red;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.colorPicker
+{
+    height:80%;
+    width:95%;
+    background-color: white;
+}
