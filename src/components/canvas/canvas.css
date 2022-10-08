@@ -1,7 +1,6 @@
-.canvas
+#canvas
 {
-    margin-left: 8vh ;
-    background-color: white;
-    height: 100%;
-    width: 100%;
+    margin-left: 10vh ;
+    margin-right: 10vh ;  
+    z-index: -1;
 }

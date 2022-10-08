@@ -11,8 +11,7 @@
     align-items: center;
     position: absolute;
     left: 0;
-    top: 0;
-    z-index: 1;
+    top: 0;    
     box-shadow: 5px 0px 10px 1px rgba(0,0,0,0.2);
 }
 
@@ -25,7 +24,6 @@
     padding-bottom: 1vh;
     
 
-    border: green solid;
 }
 
 .button

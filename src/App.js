@@ -5,11 +5,9 @@ import ToolBar from "./components/toolbar/toolbar";
 function App() {
   return (
     <div className="paint">
-      <div>
         <ToolBar />
         <CustomCanvas/>
         <ColorSizePicker/>
-      </div>
       <div className="paint__canvas"></div>
     </div>
   );
