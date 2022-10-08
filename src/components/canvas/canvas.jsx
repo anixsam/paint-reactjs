@@ -4,9 +4,11 @@ import { useEffect, useRef } from "react";
 
 let bound, ctx, canvas;
 
+let color;
+
 const CustomCanvas = () => {
-  const dispatch = useDispatch();
   const tool = useSelector((store) => store.toolStore.tool);
+  color = useSelector((store) => store.toolStore.color);
   const canvasRef = useRef(null);
 
   let mouse = {
@@ -19,16 +21,13 @@ const CustomCanvas = () => {
     canvas = canvasRef.current;
     ctx = canvas.getContext("2d");
     bound = canvas.getBoundingClientRect();
-
-    console.log(bound);
-    console.log(ctx);
-    canvas.width = window.innerWidth;
+    canvas.width = window.innerWidth - 148;
     canvas.height = window.innerHeight;
   }, [window.innerWidth, window.innerHeight]);
 
   window.addEventListener("resize", () => {
     try {
-      canvas.width = window.innerWidth - 145;
+      canvas.width = window.innerWidth - 148;
       canvas.height = window.innerHeight;
     } catch (e) {
       console.log(e);
@@ -36,8 +35,8 @@ const CustomCanvas = () => {
   });
 
   window.addEventListener("mousemove", (e) => {
-    mouse.x = e.clientX - 70;
-    mouse.y = e.clientY;
+    mouse.x = e.clientX - bound.left;
+    mouse.y = e.clientY - bound.top;
 
     if (mouse.down && tool === "pencil") {
       freeHandDraw(ctx, mouse);
@@ -58,17 +57,20 @@ const CustomCanvas = () => {
 
 function freeHandDraw(ctx, mouse) {
   ctx.beginPath();
-  //   ctx.arc(mouse.x, mouse.y, 1, 1, 2 * Math.PI);
-  //   ctx.fillStyle = "black";
-  //   ctx.fill();
 
-  ctx.lineWidth = 10;
+  ctx.lineWidth = 20;
   ctx.lineCap = "round";
 
   ctx.lineTo(mouse.x, mouse.y);
+  ctx.strokeStyle = color;
   ctx.stroke();
 
   ctx.closePath();
 }
 
+const clearCanvas = () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+};
+
 export default CustomCanvas;
+export const clearAll = clearCanvas;
