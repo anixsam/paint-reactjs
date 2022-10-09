@@ -2,10 +2,11 @@ import "./canvas.css";
 import { useSelector } from "react-redux";
 import { useEffect, useRef } from "react";
 
-let bound, ctx, canvas;
-
-let color;
-let toolValue = "";
+let bound,
+  ctx,
+  canvas,
+  color,
+  toolValue = "";
 
 const CustomCanvas = () => {
   color = useSelector((store) => store.toolStore.color);
