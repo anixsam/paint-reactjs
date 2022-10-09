@@ -55,3 +55,8 @@
 {
     border: solid 1px grey;
 }
+
+.filled
+{
+    background-color: black;
+}

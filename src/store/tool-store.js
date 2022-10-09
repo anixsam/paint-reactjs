@@ -1,9 +1,8 @@
 import {createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  tool : "pencil",
+  tool : "",
   color : "#000000",
-  clearAll : false
 };
 
 const toolSlice = createSlice({
@@ -16,9 +15,6 @@ const toolSlice = createSlice({
         setColor : (state, action) => {
             state.color = action.payload;
         },
-        setClear : (state, action) => {
-            state.clearAll = action.payload;
-        }
     }
 });
 

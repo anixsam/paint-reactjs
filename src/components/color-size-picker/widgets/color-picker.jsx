@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch} from "react-redux";
 import {setColor} from "../../../store/tool-store"
 import '../color-size.css';
 
