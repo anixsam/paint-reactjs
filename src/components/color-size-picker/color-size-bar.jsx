@@ -1,5 +1,3 @@
-
-
 import ColorPicker from "./widgets/color-picker";
 import "./color-size.css";
 const ColorSizePicker = () => {

@@ -2,12 +2,12 @@ import "./toolbar.css";
 import { useDispatch, useSelector } from "react-redux";
 import { setTool, setColor } from "../../store/tool-store";
 import { clearAll, setToolValue } from "../canvas/canvas";
-import {useState} from "react";
 
 const ToolBar = () => {
   const dispatch = useDispatch();
   const tool = useSelector((store) => store.toolStore.tool);
   const color = useSelector((store) => store.toolStore.color);
+  
 
   return (
     <div className="toolbar">
@@ -16,9 +16,9 @@ const ToolBar = () => {
           <div
             className={`rectangle`}
             onClick={() => {
+              dispatch(setColor(color === "#ffffff" ? "#000000" : color));
               dispatch(setTool(`rect`));
               setToolValue(`rect`);
-              dispatch(setColor(color));
             }}
           ></div>
         </div>
@@ -26,9 +26,10 @@ const ToolBar = () => {
           <img
             className="icon"
             onClick={(e) => {
+              dispatch(setColor(color === "#ffffff" ? "#000000" : color));
               dispatch(setTool("pencil"));
               setToolValue("pencil");
-              dispatch(setColor(color));
+              
             }}
             src="https://cdn-icons-png.flaticon.com/512/1828/1828918.png"
             alt="pencil"
@@ -49,7 +50,7 @@ const ToolBar = () => {
         <div className={`button`}>
           <img
             className="icon"
-            onClick={(e) => {
+            onClick={() => {
               clearAll();
             }}
             src="https://img.icons8.com/ios-glyphs/344/filled-trash.png"
