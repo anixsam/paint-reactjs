@@ -6,8 +6,9 @@ let bound,
   ctx,
   canvas,
   color,
-  toolValue = "";
-
+  toolValue = "",
+  marquee,
+  selected = false;
 const CustomCanvas = () => {
   color = useSelector((store) => store.toolStore.color);
   const canvasRef = useRef(null);
@@ -36,7 +37,14 @@ const CustomCanvas = () => {
     startY: 0,
     endX: 0,
     endY: 0,
-  }
+  };
+
+  marquee = {
+    startX: 0,
+    startY: 0,
+    endX: 0,
+    endY: 0,
+  };
 
   useEffect(() => {
     canvas = canvasRef.current;
@@ -46,14 +54,18 @@ const CustomCanvas = () => {
     canvas.height = window.innerHeight;
   }, []);
 
-  window.addEventListener("resize", () => {
-    try {
-      canvas.width = window.innerWidth - 190;
-      canvas.height = window.innerHeight;
-    } catch (e) {
-      console.log(e);
-    }
-  },[window.innerWidth, window.innerHeight]);
+  window.addEventListener(
+    "resize",
+    () => {
+      try {
+        canvas.width = window.innerWidth - 190;
+        canvas.height = window.innerHeight;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [window.innerWidth, window.innerHeight]
+  );
 
   window.addEventListener("mousemove", (e) => {
     mouse.x = e.clientX - bound.left;
@@ -65,6 +77,10 @@ const CustomCanvas = () => {
     } else if (mouse.down && toolValue === "rect") {
       rect.endX = mouse.x;
       rect.endY = mouse.y;
+    } else if (mouse.down && toolValue === "marquee") {
+      if(!selected)
+      {marquee.endX = mouse.x;
+      marquee.endY = mouse.y;}
     } else if (mouse.down && toolValue === "circle") {
       circle.radius = Math.sqrt(
         Math.pow(mouse.x - circle.x, 2) + Math.pow(mouse.y - circle.y, 2)
@@ -73,8 +89,7 @@ const CustomCanvas = () => {
         circle.radius < 0
           ? -Number(circle.radius.toFixed(2))
           : Number(circle.radius.toFixed(2));
-    }
-    else if(mouse.down && toolValue === "line"){
+    } else if (mouse.down && toolValue === "line") {
       line.endX = mouse.x;
       line.endY = mouse.y;
     }
@@ -83,22 +98,46 @@ const CustomCanvas = () => {
   window.addEventListener("mousedown", (e) => {
     mouse.down = true;
     if (toolValue === "pencil") freeHandDraw(ctx, mouse);
-    else if (toolValue === "rect") {
+    else if (toolValue === "rect" && mouse.x > 0 && mouse.x < canvas.width) {
       rect.startX = mouse.x;
       rect.startY = mouse.y;
 
       rect.endX = 0;
       rect.endY = 0;
-    } else if (toolValue === "eraser") {
+    } else if (toolValue === "marquee" && mouse.x > 0 && mouse.x < canvas.width) {
+      marquee.startX = mouse.x;
+      marquee.startY = mouse.y;
+
+      marquee.endX = 0;
+      marquee.endY = 0;
+    } else if (toolValue === "eraser" && mouse.x > 0 && mouse.x < canvas.width) {
       eraser(ctx, mouse);
-    } else if (toolValue === "circle") {
+    } else if (toolValue === "circle" && mouse.x > 0 && mouse.x < canvas.width) {
       circle.x = mouse.x;
       circle.y = mouse.y;
-    }
-    else if(toolValue === 'line')
-    {
+    } else if (toolValue === "line" && mouse.x > 0 && mouse.x < canvas.width) {
+
+      if (!selected) {
         line.startX = mouse.x;
         line.startY = mouse.y;
+      }
+    }
+    else if(toolValue === "text" && mouse.x > 0 && mouse.x < canvas.width)
+    {
+      const text = prompt("Enter text");
+      ctx.font = "30px Arial";
+      ctx.fillText(text!==null ? text : "" , mouse.x, mouse.y);
+    }
+  });
+
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      clearCanvas();
+    }
+    else if(e.key === "Delete")
+    {
+      deleteSelected(ctx,marquee);
     }
   });
 
@@ -121,6 +160,10 @@ const CustomCanvas = () => {
       drawRect(ctx, rect);
       if (rect.endX !== 0 && rect.endY !== 0)
         getCordinates(ctx, rectCordinates);
+    } else if (toolValue === "marquee") {
+      if(!selected){marquee.endX = mouse.x - marquee.startX;
+      marquee.endY = mouse.y - marquee.startY;
+      selectArea(ctx, marquee);}
     } else if (toolValue === "circle") {
       circle.radius = Math.sqrt(
         Math.pow(mouse.x - circle.x, 2) + Math.pow(mouse.y - circle.y, 2)
@@ -130,30 +173,62 @@ const CustomCanvas = () => {
           ? -Number(circle.radius.toFixed(2))
           : Number(circle.radius.toFixed(2));
       drawCircle(ctx, circle);
-    }
-    else if(toolValue === 'line')
-    {
-        line.endX= mouse.x;
-        line.endY = mouse.y;
-        drawLine(ctx, line);
+    } else if (toolValue === "line") {
+      line.endX = mouse.x;
+      line.endY = mouse.y;
+      drawLine(ctx, line);
     }
   });
 
   return <canvas ref={canvasRef} id="canvas"></canvas>;
 };
 
+const deleteSelected = () => {
+  if(selected)
+  {    ctx.clearRect(marquee.startX, marquee.startY, marquee.endX, marquee.endY);
+    ctx.beginPath();
+    ctx.lineWidth = 10;
+    ctx.setLineDash([0]);
+    ctx.strokeStyle = "#ffffff";
+    ctx.stroke();
+    ctx.strokeRect(marquee.startX, marquee.startY, marquee.endX, marquee.endY);
+    ctx.closePath();
+    selected = false;
+  }
+}
+
 const drawRect = (ctx, rect) => {
   ctx.beginPath();
   ctx.lineWidth = 5;
   ctx.lineCap = "round";
+  ctx.setLineDash([0]);
   ctx.strokeStyle = color;
   ctx.strokeRect(rect.startX, rect.startY, rect.endX, rect.endY);
   ctx.stroke();
   ctx.closePath();
 };
 
+const selectArea = (ctx, { startX, startY, endX, endY }) => {
+  ctx.beginPath();
+  ctx.lineWidth = 5;
+  ctx.setLineDash([10]);
+  ctx.strokeStyle = "#0000ff";
+  ctx.strokeRect(startX, startY, endX, endY);
+  ctx.stroke();
+  ctx.closePath();
+
+  selected = true;
+  //   marquee = {
+  //     startX: 0,
+  //     startY: 0,
+  //     endX: 0,
+  //     endY: 0,
+  //   };
+};
+
 const drawCircle = (ctx, { x, y, radius }) => {
   ctx.beginPath();
+  ctx.setLineDash([0]);
   ctx.strokeStyle = color;
   ctx.lineCap = "round";
   ctx.lineWidth = 5;
@@ -164,6 +239,7 @@ const drawCircle = (ctx, { x, y, radius }) => {
 
 const drawLine = (ctx, { startX, endX, startY, endY }) => {
   ctx.beginPath();
+  ctx.setLineDash([0]);
   ctx.lineWidth = 5;
   ctx.lineCap = "round";
   ctx.strokeStyle = color;
@@ -242,6 +318,7 @@ const freeHandDraw = (ctx, mouse) => {
 
 const clearCanvas = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  selected = false;
 };
 
 const setTools = (toolName) => {

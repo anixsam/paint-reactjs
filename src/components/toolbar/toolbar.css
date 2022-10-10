@@ -72,3 +72,10 @@
   justify-content: center;
   align-items: center;
 }
+
+.marquee {
+  padding: 1vh;
+  height: 2vh;
+  width: 4vh;
+  border: dashed 3px black;
+}

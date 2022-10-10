@@ -10,7 +10,9 @@
     [] Clear Canvas
     [] Lines
     [] Circles
-
+    [] Add text
+    [] Select and Delete
+    [] Keyboard Shortcut - Esc(Clear) Delete(For deletion after selection)
 
 ### To install the app
 
@@ -18,6 +20,5 @@
     [] cd paint-reactjs
     [] npm i
     [] npm start
-
 
 # [Live Demo](https://paint-reactjs.vercel.app)

@@ -3,10 +3,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { setTool, setColor } from "../../store/tool-store";
 import { clearAll, setToolValue } from "../canvas/canvas";
 
+let imgSrc = "https://img.icons8.com/ios/344/"
+
 const ToolBar = () => {
   const dispatch = useDispatch();
   const tool = useSelector((store) => store.toolStore.tool);
-  const color = useSelector((store) => store.toolStore.color);
 
   return (
     <div className="toolbar">
@@ -15,29 +16,34 @@ const ToolBar = () => {
           <div
             className={`rectangle`}
             onClick={() => {
-              dispatch(setColor(color === "#ffffff" ? "#000000" : color));
+              let colorInput = document.querySelector(".colorPicker");
+              let colorValue = colorInput.value;
+              dispatch(setColor(colorValue));
               dispatch(setTool(`rect`));
               setToolValue(`rect`);
             }}
           ></div>
         </div>
         <div className={`button ${tool === "line" ? "active" : ""} `}>
-          <div
-            className={`line-div`}
-            onClick={() => {
-              dispatch(setColor(color === "#ffffff" ? "#000000" : color));
+          <div className="line-div"  onClick={() => {
+              let colorInput = document.querySelector(".colorPicker");
+              let colorValue = colorInput.value;
+              dispatch(setColor(colorValue));
               dispatch(setTool(`line`));
               setToolValue(`line`);
-            }}
-          >
-            <div className={`line`}></div>
-          </div>
+            }}>
+          <div
+            className={`line`}
+           
+          ></div></div>
         </div>
         <div className={`button ${tool === "circle" ? "active" : ""} `}>
           <div
             className={`circle`}
             onClick={() => {
-              dispatch(setColor(color === "#ffffff" ? "#000000" : color));
+              let colorInput = document.querySelector(".colorPicker");
+              let colorValue = colorInput.value;
+              dispatch(setColor(colorValue));
               dispatch(setTool(`circle`));
               setToolValue(`circle`);
             }}
@@ -47,12 +53,28 @@ const ToolBar = () => {
           <img
             className="icon"
             onClick={(e) => {
-              dispatch(setColor(color === "#ffffff" ? "#000000" : color));
+              let colorInput = document.querySelector(".colorPicker");
+              let colorValue = colorInput.value;
+              dispatch(setColor(colorValue));
               dispatch(setTool("pencil"));
               setToolValue("pencil");
             }}
-            src="https://cdn-icons-png.flaticon.com/512/1828/1828918.png"
+            src={`${imgSrc}/pencil.png`}
             alt="pencil"
+          />
+        </div>
+        <div className={`button ${tool === "text" ? "active" : ""}`}>
+          <img
+            className="icon"
+            onClick={() => {
+              dispatch(setTool("text"));
+              setToolValue("text");
+              let colorInput = document.querySelector(".colorPicker");
+              let colorValue = colorInput.value;
+              dispatch(setColor(colorValue));
+            }}
+            src={`${imgSrc}/text.png`}
+            alt="eraser"
           />
         </div>
         <div className={`button ${tool === "eraser" ? "active" : ""}`}>
@@ -63,9 +85,17 @@ const ToolBar = () => {
               setToolValue("eraser");
               dispatch(setColor("#ffffff"));
             }}
-            src="https://img.icons8.com/ios/344/eraser.png"
+            src={`${imgSrc}/eraser.png`}
             alt="eraser"
           />
+        </div>
+        <div className={`button ${tool === "marquee" ? "active" : ""}`}>
+          <div className="marquee" onClick={
+            () => {
+              dispatch(setTool("marquee"));
+              setToolValue("marquee");
+            }
+          }></div>
         </div>
         <div className={`button`}>
           <img
@@ -77,6 +107,7 @@ const ToolBar = () => {
             alt="trash"
           />
         </div>
+        
       </div>
     </div>
   );
