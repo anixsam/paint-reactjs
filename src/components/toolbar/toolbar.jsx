@@ -7,7 +7,6 @@ const ToolBar = () => {
   const dispatch = useDispatch();
   const tool = useSelector((store) => store.toolStore.tool);
   const color = useSelector((store) => store.toolStore.color);
-  
 
   return (
     <div className="toolbar">
@@ -22,6 +21,28 @@ const ToolBar = () => {
             }}
           ></div>
         </div>
+        <div className={`button ${tool === "line" ? "active" : ""} `}>
+          <div
+            className={`line-div`}
+            onClick={() => {
+              dispatch(setColor(color === "#ffffff" ? "#000000" : color));
+              dispatch(setTool(`line`));
+              setToolValue(`line`);
+            }}
+          >
+            <div className={`line`}></div>
+          </div>
+        </div>
+        <div className={`button ${tool === "circle" ? "active" : ""} `}>
+          <div
+            className={`circle`}
+            onClick={() => {
+              dispatch(setColor(color === "#ffffff" ? "#000000" : color));
+              dispatch(setTool(`circle`));
+              setToolValue(`circle`);
+            }}
+          ></div>
+        </div>
         <div className={`button ${tool === "pencil" ? "active" : ""}`}>
           <img
             className="icon"
@@ -29,7 +50,6 @@ const ToolBar = () => {
               dispatch(setColor(color === "#ffffff" ? "#000000" : color));
               dispatch(setTool("pencil"));
               setToolValue("pencil");
-              
             }}
             src="https://cdn-icons-png.flaticon.com/512/1828/1828918.png"
             alt="pencil"

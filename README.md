@@ -8,6 +8,8 @@
     [] Eraser
     [] Rectangle Drawing - with cordinates displayed
     [] Clear Canvas
+    [] Lines
+    [] Circles
 
 
 ### To install the app

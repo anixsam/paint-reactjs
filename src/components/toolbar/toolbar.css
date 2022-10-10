@@ -3,60 +3,72 @@
     border: solid 1px red;
 } */
 
-.toolbar
-{
-    width: max-content;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    position: absolute;
-    left: 0;
-    top: 0;    
-    box-shadow: 5px 0px 10px 1px rgba(0,0,0,0.2);
+.toolbar {
+  width: max-content;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-shadow: 5px 0px 10px 1px rgba(0, 0, 0, 0.2);
 }
 
-.buttonGroup
-{
-    height: max-content;
-    width: 100%;
+.buttonGroup {
+  height: max-content;
+  width: 100%;
 
-    padding-top: 1vh;
-    padding-bottom: 1vh;
-    
-
+  padding-top: 1vh;
+  padding-bottom: 1vh;
 }
 
-.button
-{
-    height: 8vh;
-    width: 8vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 5px;
+.button {
+  height: 8vh;
+  width: 8vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px;
 }
 
-.rectangle
-{
-    padding: 1vh;
-    height: 2vh;
-    width: 4vh;
-    border:solid 3px black;
+.rectangle {
+  padding: 1vh;
+  height: 2vh;
+  width: 4vh;
+  border: solid 3px black;
 }
 
-.icon
-{
-    height: 4vh;
-    width: 4vh;
-    padding: 1vh;
+.circle {
+  height: 4vh;
+  width: 4vh;
+  border-radius: 100%;
+  border: solid 3px black;
 }
 
-.active
-{
-    border: solid 1px grey;
+.icon {
+  height: 4vh;
+  width: 4vh;
+  padding: 1vh;
 }
 
-.filled
-{
-    background-color: black;
+.active {
+  border: solid 1px grey;
+}
+
+.filled {
+  background-color: black;
+}
+
+.line {
+  height: 0vh;
+  width: 6vh;
+  border: solid 1px black;
+  transform: rotate(45deg);
+}
+
+.line-div {
+  height: 5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
