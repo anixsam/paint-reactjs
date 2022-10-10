@@ -22,3 +22,6 @@
     [] npm start
 
 # [Live Demo](https://paint-reactjs.vercel.app)
+
+
+### NB : This app is still in dev phase there will be serious bugs
