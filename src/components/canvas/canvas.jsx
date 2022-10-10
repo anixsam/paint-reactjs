@@ -332,19 +332,19 @@ const selectArea = (ctx, { startX, startY, endX, endY }) => {
   ctx.closePath();
 };
 
-// const drawCircle = (ctx, { x, y, radius }) => {
-//   ctx.beginPath();
-//   ctx.clearRect(0, 0, canvas.width, canvas.height);
-//   ctx.setLineDash([0]);
-//   ctx.strokeStyle = color;
-//   ctx.lineCap = "round";
-//   ctx.lineWidth = 5;
-//   ctx.arc(x, y, radius, 0, 2 * Math.PI);
-//   ctx.stroke();
-//   ctx.closePath();
-// };
+const drawCircle = (ctx, { x, y, radius }) => {
+  ctx.beginPath();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.setLineDash([0]);
+  ctx.strokeStyle = color;
+  ctx.lineCap = "round";
+  ctx.lineWidth = 5;
+  ctx.arc(x, y, radius, 0, 2 * Math.PI);
+  ctx.stroke();
+  ctx.closePath();
+};
 
-const drawCircle = (ctx, { x, y, radius }) => {};
+// const drawCircle = (ctx, { x, y, radius }) => {};
 
 const drawLine = (ctx, { startX, endX, startY, endY }) => {
   ctx.beginPath();
