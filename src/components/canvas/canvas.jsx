@@ -7,8 +7,13 @@ let bound,
   canvas,
   color,
   toolValue = "",
-  marquee,
-  selected = false;
+  marquee;
+
+let rectangles = [];
+let circles = [];
+let lines = [];
+let strokes = [];
+
 const CustomCanvas = () => {
   color = useSelector((store) => store.toolStore.color);
   const canvasRef = useRef(null);
@@ -71,16 +76,38 @@ const CustomCanvas = () => {
     mouse.x = e.clientX - bound.left;
     mouse.y = e.clientY - bound.top;
     if (mouse.down && toolValue === "pencil") {
+      strokes.push({
+        x: mouse.x,
+        y: mouse.y,
+        color: color,
+      });
       freeHandDraw(ctx, mouse);
+      restoreCircles(ctx, circles);
+      restoreRectangles(ctx, rectangles);
+      restoreLines(ctx, lines);
+      restoreStrokes(ctx, strokes);
     } else if (mouse.down && toolValue === "eraser") {
       eraser(ctx, mouse);
     } else if (mouse.down && toolValue === "rect") {
-      rect.endX = mouse.x;
-      rect.endY = mouse.y;
+      rect.endX = mouse.x - rect.startX;
+      rect.endY = mouse.y - rect.startY;
+      drawRect(ctx, rect);
+      restoreCircles(ctx, circles);
+      restoreRectangles(ctx, rectangles);
+      restoreLines(ctx, lines);
+      restoreStrokes(ctx, strokes);
     } else if (mouse.down && toolValue === "marquee") {
-      if(!selected)
-      {marquee.endX = mouse.x;
-      marquee.endY = mouse.y;}
+    
+        marquee.endX = mouse.x - marquee.startX;
+        marquee.endY = mouse.y - marquee.startY;
+
+        selectArea(ctx, marquee);
+      
+
+      restoreCircles(ctx, circles);
+      restoreRectangles(ctx, rectangles);
+      restoreLines(ctx, lines);
+      restoreStrokes(ctx, strokes);
     } else if (mouse.down && toolValue === "circle") {
       circle.radius = Math.sqrt(
         Math.pow(mouse.x - circle.x, 2) + Math.pow(mouse.y - circle.y, 2)
@@ -89,9 +116,21 @@ const CustomCanvas = () => {
         circle.radius < 0
           ? -Number(circle.radius.toFixed(2))
           : Number(circle.radius.toFixed(2));
+
+      drawCircle(ctx, circle);
+      restoreCircles(ctx, circles);
+      restoreRectangles(ctx, rectangles);
+      restoreLines(ctx, lines);
+      restoreStrokes(ctx, strokes);
     } else if (mouse.down && toolValue === "line") {
       line.endX = mouse.x;
       line.endY = mouse.y;
+
+      drawLine(ctx, line);
+      restoreCircles(ctx, circles);
+      restoreRectangles(ctx, rectangles);
+      restoreLines(ctx, lines);
+      restoreStrokes(ctx, strokes);
     }
   });
 
@@ -116,28 +155,20 @@ const CustomCanvas = () => {
       circle.x = mouse.x;
       circle.y = mouse.y;
     } else if (toolValue === "line") {
-
-      if (!selected) {
-        line.startX = mouse.x;
-        line.startY = mouse.y;
-      }
-    }
-    else if(toolValue === "text" && mouse.x > 0 && mouse.x < canvas.width)
-    {
+      line.startX = mouse.x;
+      line.startY = mouse.y;
+    } else if (toolValue === "text" && mouse.x > 0 && mouse.x < canvas.width) {
       const text = prompt("Enter text");
       ctx.font = "30px Arial";
-      ctx.fillText(text!==null ? text : "" , mouse.x, mouse.y);
+      ctx.fillText(text !== null ? text : "", mouse.x, mouse.y);
     }
   });
-
 
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       clearCanvas();
-    }
-    else if(e.key === "Delete")
-    {
-      deleteSelected(ctx,marquee);
+    } else if (e.key === "Delete") {
+      deleteSelected(ctx, marquee);
     }
   });
 
@@ -155,15 +186,29 @@ const CustomCanvas = () => {
         c: { x: endX, y: endY },
         b: { x: endX, y: rect.startY },
         d: { x: rect.startX, y: endY },
+        color: color,
       };
 
+      rectangles.push(rectCordinates);
       drawRect(ctx, rect);
+      restoreRectangles(ctx, rectangles);
+      restoreCircles(ctx, circles);
+      restoreLines(ctx, lines);
+      restoreStrokes(ctx, strokes);
+
       if (rect.endX !== 0 && rect.endY !== 0)
         getCordinates(ctx, rectCordinates);
     } else if (toolValue === "marquee") {
-      if(!selected){marquee.endX = mouse.x - marquee.startX;
-      marquee.endY = mouse.y - marquee.startY;
-      selectArea(ctx, marquee);}
+        marquee.endX = mouse.x - marquee.startX;
+        marquee.endY = mouse.y - marquee.startY;
+
+        selectArea(ctx, marquee);
+
+
+      restoreRectangles(ctx, rectangles);
+      restoreCircles(ctx, circles);
+      restoreLines(ctx, lines);
+      restoreStrokes(ctx, strokes);
     } else if (toolValue === "circle") {
       circle.radius = Math.sqrt(
         Math.pow(mouse.x - circle.x, 2) + Math.pow(mouse.y - circle.y, 2)
@@ -172,20 +217,88 @@ const CustomCanvas = () => {
         circle.radius < 0
           ? -Number(circle.radius.toFixed(2))
           : Number(circle.radius.toFixed(2));
+
+      circles.push({ x: circle.x, y: circle.y, radius: circle.radius });
       drawCircle(ctx, circle);
+      restoreRectangles(ctx, rectangles);
+      restoreCircles(ctx, circles);
+      restoreLines(ctx, lines);
+      restoreStrokes(ctx, strokes);
     } else if (toolValue === "line") {
       line.endX = mouse.x;
       line.endY = mouse.y;
+
+      lines.push({
+        startX: line.startX,
+        startY: line.startY,
+        endX: line.endX,
+        endY: line.endY,
+      });
       drawLine(ctx, line);
+      restoreCircles(ctx, circles);
+      restoreRectangles(ctx, rectangles);
+      restoreLines(ctx, lines);
+      restoreStrokes(ctx, strokes);
     }
   });
 
   return <canvas ref={canvasRef} id="canvas"></canvas>;
 };
 
+const restoreStrokes = (ctx, strokes) => {
+  strokes.forEach((stroke) => {
+    ctx.beginPath();
+    ctx.lineWidth = 20;
+    ctx.lineCap = "round";
+    ctx.moveTo(stroke.x, stroke.y);
+    ctx.setLineDash([0]);
+    ctx.lineTo(stroke.x, stroke.y);
+    ctx.strokeStyle = stroke.color;
+    ctx.stroke();
+  });
+};
+
+const restoreRectangles = (ctx, rectangles) => {
+  rectangles.forEach((rect) => {
+    ctx.beginPath();
+    ctx.setLineDash([0]);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = rect.color;
+    ctx.rect(rect.a.x, rect.a.y, rect.c.x - rect.a.x, rect.c.y - rect.a.y);
+    getCordinates(ctx, rect);
+    ctx.stroke();
+  });
+};
+
+const restoreCircles = (ctx, circles) => {
+  circles.forEach(({ x, y, radius }) => {
+    ctx.beginPath();
+    ctx.setLineDash([0]);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = color;
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.lineCap = "round";
+    ctx.stroke();
+  });
+};
+
+const restoreLines = (ctx, lines) => {
+  lines.forEach(({ startX, startY, endX, endY }) => {
+    ctx.beginPath();
+    ctx.setLineDash([0]);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = color;
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+
+    ctx.lineCap = "round";
+    ctx.stroke();
+  });
+};
+
 const deleteSelected = () => {
-  if(selected)
-  {    ctx.clearRect(marquee.startX, marquee.startY, marquee.endX, marquee.endY);
+
+    ctx.clearRect(marquee.startX, marquee.startY, marquee.endX, marquee.endY);
     ctx.beginPath();
     ctx.lineWidth = 10;
     ctx.setLineDash([0]);
@@ -193,12 +306,11 @@ const deleteSelected = () => {
     ctx.stroke();
     ctx.strokeRect(marquee.startX, marquee.startY, marquee.endX, marquee.endY);
     ctx.closePath();
-    selected = false;
-  }
-}
+};
 
 const drawRect = (ctx, rect) => {
   ctx.beginPath();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.lineWidth = 5;
   ctx.lineCap = "round";
   ctx.setLineDash([0]);
@@ -210,35 +322,33 @@ const drawRect = (ctx, rect) => {
 
 const selectArea = (ctx, { startX, startY, endX, endY }) => {
   ctx.beginPath();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.lineWidth = 5;
+  ctx.lineCap = "round";
   ctx.setLineDash([10]);
   ctx.strokeStyle = "#0000ff";
   ctx.strokeRect(startX, startY, endX, endY);
   ctx.stroke();
   ctx.closePath();
-
-  selected = true;
-  //   marquee = {
-  //     startX: 0,
-  //     startY: 0,
-  //     endX: 0,
-  //     endY: 0,
-  //   };
 };
 
-const drawCircle = (ctx, { x, y, radius }) => {
-  ctx.beginPath();
-  ctx.setLineDash([0]);
-  ctx.strokeStyle = color;
-  ctx.lineCap = "round";
-  ctx.lineWidth = 5;
-  ctx.arc(x, y, radius, 0, 2 * Math.PI);
-  ctx.stroke();
-  ctx.closePath();
-};
+// const drawCircle = (ctx, { x, y, radius }) => {
+//   ctx.beginPath();
+//   ctx.clearRect(0, 0, canvas.width, canvas.height);
+//   ctx.setLineDash([0]);
+//   ctx.strokeStyle = color;
+//   ctx.lineCap = "round";
+//   ctx.lineWidth = 5;
+//   ctx.arc(x, y, radius, 0, 2 * Math.PI);
+//   ctx.stroke();
+//   ctx.closePath();
+// };
+
+const drawCircle = (ctx, { x, y, radius }) => {};
 
 const drawLine = (ctx, { startX, endX, startY, endY }) => {
   ctx.beginPath();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.setLineDash([0]);
   ctx.lineWidth = 5;
   ctx.lineCap = "round";
@@ -305,7 +415,7 @@ const eraser = (ctx, mouse) => {
 
 const freeHandDraw = (ctx, mouse) => {
   ctx.beginPath();
-
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.lineWidth = 20;
   ctx.lineCap = "round";
 
@@ -318,7 +428,10 @@ const freeHandDraw = (ctx, mouse) => {
 
 const clearCanvas = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  selected = false;
+  rectangles = [];
+  circles = [];
+  lines = [];
+  strokes = [];
 };
 
 const setTools = (toolName) => {
