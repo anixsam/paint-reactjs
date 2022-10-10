@@ -98,24 +98,24 @@ const CustomCanvas = () => {
   window.addEventListener("mousedown", (e) => {
     mouse.down = true;
     if (toolValue === "pencil") freeHandDraw(ctx, mouse);
-    else if (toolValue === "rect" && mouse.x > 0 && mouse.x < canvas.width) {
+    else if (toolValue === "rect") {
       rect.startX = mouse.x;
       rect.startY = mouse.y;
 
       rect.endX = 0;
       rect.endY = 0;
-    } else if (toolValue === "marquee" && mouse.x > 0 && mouse.x < canvas.width) {
+    } else if (toolValue === "marquee") {
       marquee.startX = mouse.x;
       marquee.startY = mouse.y;
 
       marquee.endX = 0;
       marquee.endY = 0;
-    } else if (toolValue === "eraser" && mouse.x > 0 && mouse.x < canvas.width) {
+    } else if (toolValue === "eraser") {
       eraser(ctx, mouse);
-    } else if (toolValue === "circle" && mouse.x > 0 && mouse.x < canvas.width) {
+    } else if (toolValue === "circle") {
       circle.x = mouse.x;
       circle.y = mouse.y;
-    } else if (toolValue === "line" && mouse.x > 0 && mouse.x < canvas.width) {
+    } else if (toolValue === "line") {
 
       if (!selected) {
         line.startX = mouse.x;
